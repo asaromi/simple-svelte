@@ -3,16 +3,20 @@
 	import { spring } from 'svelte/motion'
 	import { createEventDispatcher, onMount } from 'svelte'
 
-    export let totalData = 0
+	export let totalData = 0
 
 	const displayed_currentPage = spring()
 	const dispatch = createEventDispatcher()
 
 	let currentPage
 	let limit
-	$: currentPage = $page.url.searchParams.get('page') || 1
-	$: limit = $page.url.searchParams.get('limit') || 10
-
+    $: {
+		if ($page.url) {
+            const urlSearchParams = $page.url.searchParams
+            currentPage = urlSearchParams.get('page') || 1
+            limit = urlSearchParams.get('limit') || 10
+        }
+    }
 
 	$: displayed_currentPage.set(parseInt(currentPage > 0 ? currentPage : '1'))
 	$: offset = modulo($displayed_currentPage, 1)
@@ -44,10 +48,10 @@
 <div>
     <div class="paginate">
         <button
-            disabled={currentPage <= 1}
-            aria-label="Decrease the paginate by one"
-            style={currentPage <= 1 ? 'opacity: 0.5;pointer-events:none;' : ''}
-            on:click={previousPage}
+                disabled={currentPage <= 1}
+                aria-label="Decrease the paginate by one"
+                style={currentPage <= 1 ? 'opacity: 0.5;pointer-events:none;' : ''}
+                on:click={previousPage}
         >
             <svg aria-hidden="true" viewBox="0 0 1 1">
                 <path d="M0,0.5 L1,0.5"/>
