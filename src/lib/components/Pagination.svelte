@@ -1,5 +1,6 @@
 <script>
 	import { page } from '$app/stores'
+	import { browser } from '$app/environment'
 	import { spring } from 'svelte/motion'
 	import { createEventDispatcher, onMount } from 'svelte'
 
@@ -11,12 +12,13 @@
 	let currentPage
 	let limit
     $: {
-		if ($page.url) {
-            const urlSearchParams = $page.url.searchParams
-            currentPage = urlSearchParams.get('page') || 1
-            limit = urlSearchParams.get('limit') || 10
-        }
+        const url = new URL($page.url)
+        currentPage = url.searchParams.get('page') || 1
+        limit = url.searchParams.get('limit') || 10
     }
+
+	// $: currentPage = $browser && $page.url.searchParams.get('page') || 1
+	// $: limit = $browser && $page.url.searchParams.get('limit') || 10
 
 	$: displayed_currentPage.set(parseInt(currentPage > 0 ? currentPage : '1'))
 	$: offset = modulo($displayed_currentPage, 1)
